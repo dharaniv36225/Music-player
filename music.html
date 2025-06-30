@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Stylish Music Player</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      transition: background-image 0.6s ease-in-out;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .player {
+      width: 350px;
+      padding: 25px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      text-align: center;
+      color: #fff;
+    }
+
+    .song-info {
+      margin-bottom: 10px;
+    }
+
+    #title {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    #artist {
+      font-size: 14px;
+      color: #c0d7ff;
+    }
+
+    .controls {
+      margin: 20px 0;
+    }
+
+    .controls button {
+      background: #ffffff20;
+      border: none;
+      color: white;
+      font-size: 22px;
+      margin: 0 12px;
+      padding: 10px;
+      border-radius: 50%;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    .controls button:hover {
+      background: #ffffff40;
+      transform: scale(1.1);
+    }
+
+    .progress-container {
+      background: #fff4;
+      height: 8px;
+      width: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .progress {
+      height: 100%;
+      width: 0%;
+      background: #00ffe7;
+    }
+
+    .time {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #ddd;
+      margin: 6px 0;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .playlist {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+      text-align: left;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .playlist li {
+      padding: 8px 10px;
+      border-bottom: 1px solid #ffffff33;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .playlist li:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+<div class="player">
+  <div class="song-info">
+    <div id="title">Loading...</div>
+    <div id="artist">Please wait</div>
+  </div>
+
+  <audio id="audio" preload="metadata"></audio>
+
+  <div class="controls">
+    <button onclick="prevSong()">⏮</button>
+    <button onclick="togglePlay()" id="play-btn">▶️</button>
+    <button onclick="nextSong()">⏭</button>
+  </div>
+
+  <div class="progress-container" onclick="setProgress(event)">
+    <div class="progress" id="progress-bar"></div>
+  </div>
+  <div class="time">
+    <span id="current-time">0:00</span>
+    <span id="duration">0:00</span>
+  </div>
+
+  <label for="volume">Volume</label>
+  <input type="range" id="volume" min="0" max="1" step="0.01" onchange="setVolume(this.value)" />
+
+  <ul class="playlist" id="playlist"></ul>
+</div>
+
+<script>
+ const songs = [
+  {
+    title: "Premalo",
+    artist: "Sridevi, Harsh Roshan",
+    src: "[iSongs.info] 01 - Premalo.mp3",
+    background: "url('https://english.bigtvlive.com/wp-content/uploads/2025/03/Untitled-design-33.jpg')"
+  },
+  {
+    title: "Chitti Guvva",
+    artist: "Sridevi, Harsh Roshan",
+    src: "[iSongs.info] 02 - Chitti Guvva.mp3",
+    background: "url('https://english.bigtvlive.com/wp-content/uploads/2025/03/Untitled-design-33.jpg')"
+  },
+  {
+    title: "Naa Praanam",
+    artist: "Pavish, Anikha Surendran",
+    src: "[iSongs.info] 05 - Naa Praanam.mp3",
+    background: "url('https://images.moviebuff.com/5f70c3c1-94b7-4973-8941-ef2e5582657e?w=500)"
+  },
+  {
+    title: "Golden Sparrow",
+    artist: "Pavish, Anikha Surendran",
+    src: "[iSongs.info] 01 - Golden Sparrow.mp3",
+    background: "url('https://images.moviebuff.com/5f70c3c1-94b7-4973-8941-ef2e5582657e?w=500')"
+  },
+  {
+    title: "Pillaa",
+    artist: "Pavish, Anikha Surendran",
+    src: "[iSongs.info] 02 - Pillaa.mp3",
+    background: "url('https://images.moviebuff.com/5f70c3c1-94b7-4973-8941-ef2e5582657e?w=500')"
+  },
+  {
+    title: "Nee Manusu Naan Manusu",
+    artist: "Pavish, Anikha Surendran",
+    src: "[iSongs.info] 06 - Nee Manusu Naan Manusu.mp3",
+    background: "url('https://images.moviebuff.com/5f70c3c1-94b7-4973-8941-ef2e5582657e?w=500')"
+  },
+  {
+    title: "Prema Failai Poyera",
+    artist: "Pavish, Anikha Surendran",
+    src: "[iSongs.info] 03 - Prema Failai Poyera.mp3",
+    background: "url('https://images.moviebuff.com/5f70c3c1-94b7-4973-8941-ef2e5582657e?w=500')"
+  },
+  {
+    title: "Yedhee",
+    artist: "Pavish, Anikha Surendran",
+    src: "[iSongs.info] 04 - Yedhee.mp3",
+    background: "url('https://images.moviebuff.com/5f70c3c1-94b7-4973-8941-ef2e5582657e?w=500')"
+  },
+  {
+    title: "Yettu Poya",
+    artist: "Pavish, Anikha Surendran",
+    src: "[iSongs.info] 07 - Yettu Poya.mp3",
+    background: "url('https://images.moviebuff.com/5f70c3c1-94b7-4973-8941-ef2e5582657e?w=500')"
+  }
+];
+
+  const audio = document.getElementById("audio");
+  const title = document.getElementById("title");
+  const artist = document.getElementById("artist");
+  const progressBar = document.getElementById("progress-bar");
+  const currentTimeEl = document.getElementById("current-time");
+  const durationEl = document.getElementById("duration");
+  const playBtn = document.getElementById("play-btn");
+  const playlistEl = document.getElementById("playlist");
+
+  let currentSong = 0;
+
+  function loadSong(index) {
+    const song = songs[index];
+    audio.src = song.src;
+    title.textContent = song.title;
+    artist.textContent = song.artist;
+    document.body.style.backgroundImage = song.background;
+    audio.load();
+  }
+
+  function togglePlay() {
+    if (audio.paused) {
+      audio.play();
+      playBtn.textContent = "⏸️";
+    } else {
+      audio.pause();
+      playBtn.textContent = "▶️";
+    }
+  }
+
+  function nextSong() {
+    currentSong = (currentSong + 1) % songs.length;
+    loadSong(currentSong);
+    audio.play();
+    playBtn.textContent = "⏸️";
+  }
+
+  function prevSong() {
+    currentSong = (currentSong - 1 + songs.length) % songs.length;
+    loadSong(currentSong);
+    audio.play();
+    playBtn.textContent = "⏸️";
+  }
+
+  function setProgress(e) {
+    const width = e.currentTarget.clientWidth;
+    const clickX = e.offsetX;
+    const duration = audio.duration;
+    audio.currentTime = (clickX / width) * duration;
+  }
+
+  function setVolume(value) {
+    audio.volume = value;
+  }
+
+  function updateTime() {
+    const current = audio.currentTime;
+    const duration = audio.duration;
+    progressBar.style.width = `${(current / duration) * 100}%`;
+    currentTimeEl.textContent = formatTime(current);
+    durationEl.textContent = isNaN(duration) ? "0:00" : formatTime(duration);
+  }
+
+  function formatTime(sec) {
+    const minutes = Math.floor(sec / 60);
+    const seconds = Math.floor(sec % 60).toString().padStart(2, "0");
+    return `${minutes}:${seconds}`;
+  }
+
+  songs.forEach((song, index) => {
+    const li = document.createElement("li");
+    li.textContent = `${song.title} - ${song.artist}`;
+    li.onclick = () => {
+      currentSong = index;
+      loadSong(currentSong);
+      audio.play();
+      playBtn.textContent = "⏸️";
+    };
+    playlistEl.appendChild(li);
+  });
+
+  audio.addEventListener("timeupdate", updateTime);
+  audio.addEventListener("ended", nextSong);
+
+  loadSong(currentSong);
+</script>
+
+</body>
+</html>
