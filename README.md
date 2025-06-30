@@ -3,13 +3,8 @@
 
 A sleek and stylish **Music Player Web App** with a futuristic neon UI, smooth animations, and essential music playback controls. Built entirely with **HTML, CSS, and JavaScript**, this music player is lightweight, responsive, and works offline!
 
-![Neon Music Player Preview](images/screenshot.png)
-
----
-
-## 🚀 Live Demo
-
-🟢 [Try It Online](https://your-username.github.io/music-player)
+![Screenshot (107)](https://github.com/user-attachments/assets/be53545d-b93e-4adb-93d8-b6c21671a05b)
+![Screenshot (108)](https://github.com/user-attachments/assets/ae837516-f5a4-42a6-8994-71a62dde5302)
 
 ---
 
@@ -63,20 +58,13 @@ A sleek and stylish **Music Player Web App** with a futuristic neon UI, smooth a
 └── README.md               # Documentation
 🖥️ How to Use
 Clone this repo
-
-bash
-Copy
-Edit
 git clone https://github.com/your-username/music-player.git
 Open in browser
 Just open index.html in any modern browser.
 
 Customize your playlist
 Open script.js and modify the playlist array:
-
 javascript
-Copy
-Edit
 let playlist = [
   {
     title: "Song Name",
@@ -102,7 +90,8 @@ let playlist = [
  Integrate lyrics API or Spotify metadata
 
 🧑‍💻 Author
-Developed by Your Name
+Developed by  V Dharani
+
 
 📫 For feedback or contributions, feel free to open an issue or PR!
 
